@@ -74,8 +74,8 @@ class BeverageRepository(Database):
     def __str__(self):
         """String method"""
         return_string = ""
-        result = self._query_database_for_all_beverages()
-        for beverage in result:
+        beverages = self._query_database_for_all_beverages()
+        for beverage in beverages:
             return_string += f"{beverage}{os.linesep}"
         return return_string
 
@@ -85,12 +85,8 @@ class BeverageRepository(Database):
 
     def find_by_id(self, id_):
         """Find a beverage by it's id"""
-        result = session.execute(text(f"SELECT {id_} FROM beverages"))
-        beverage = result.scalars()
-        for item in beverage:
-            print(beverage.id)
-            print(beverage.name)
-        return result
+        beverage = session.query(Beverage).get(id_)
+        return beverage
 
     def create_beverage(self, id_, name, pack, price, active) -> Beverage:
         """create beverage from parameters"""
@@ -98,5 +94,5 @@ class BeverageRepository(Database):
 
     def _query_database_for_all_beverages(self) -> object:
         """method to get iterable of all beverages in database"""
-        result = session.execute(text("SELECT * FROM beverages"))
+        result = session.query(Beverage).all()
         return result

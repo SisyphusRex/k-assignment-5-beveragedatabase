@@ -19,7 +19,7 @@ class CSVProcessor:
         self._has_been_imported = False
         self._has_created_database = False
 
-    def import_csv(self, beverage_collection, path_to_csv_file):
+    def import_csv(self, beverage_repository, path_to_csv_file):
         """Import CSV and populate beverage collection"""
 
         if os.path.exists("./db.sqlite3"):
@@ -32,7 +32,7 @@ class CSVProcessor:
         if self._has_created_database:
             raise AlreadyCreatedDatabaseError
 
-        beverage_collection.create_database()
+        beverage_repository.create_database()
         self._has_created_database = True
 
         # With open of file
@@ -42,13 +42,13 @@ class CSVProcessor:
             # While the line is not None
             while line:
                 # Process the line.
-                self._process_line(line, beverage_collection)
+                self._process_line(line, beverage_repository)
                 # Read next line.
                 line = file.readline().replace("\n", "")
             # All lines read and processed, flip flag to true.
             self._has_been_imported = True
 
-    def _process_line(self, line, beverage_collection):
+    def _process_line(self, line, beverage_repository):
         """Process a line from a CSV file"""
 
         # Split line by comma
@@ -61,7 +61,7 @@ class CSVProcessor:
         price = float(parts[3])
         active = parts[4] == "True"
 
-        # Add a new beverage to the collection with the properties of what was read in.
-        beverage_collection.populate_database(
-            beverage_collection.create_beverage(item_id, name, pack, price, active)
+        # Add a new beverage to the repository with the properties of what was read in.
+        beverage_repository.populate_database(
+            beverage_repository.create_beverage(item_id, name, pack, price, active)
         )
