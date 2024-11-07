@@ -3,8 +3,10 @@
 # Walter Podewil
 # CIS 226
 # November 6, 2024
+
 # System Imports.
 import os
+
 
 # Third Party Imports
 from sqlalchemy import Column
@@ -12,6 +14,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.types import String, Float, Boolean
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.sql import text
 
 
 # NOTE: added
@@ -22,15 +25,16 @@ session = Session()
 
 
 class Database:
-    def create_database():
+    """database class"""
+
+    def create_database(self) -> None:
         """method to create database"""
         Base.metadata.create_all(engine)
 
-    def populate_database(beverages):
+    def populate_database(self, data_to_add) -> None:
         """populate database from list of beverages"""
-        for beverage in beverages:
-            session.add(beverage)
-            session.commit()
+        session.add(data_to_add)
+        session.commit()
 
 
 class Beverage(Base):
@@ -70,7 +74,8 @@ class BeverageRepository(Database):
     def __str__(self):
         """String method"""
         return_string = ""
-        for beverage in self.__beverages:
+        result = self._query_database_for_all_beverages()
+        for beverage in result:
             return_string += f"{beverage}{os.linesep}"
         return return_string
 
@@ -80,11 +85,18 @@ class BeverageRepository(Database):
 
     def find_by_id(self, id_):
         """Find a beverage by it's id"""
-        for beverage in self.__beverages:
-            if beverage.id == id_:
-                return beverage
+        result = session.execute(text(f"SELECT {id_} FROM beverages"))
+        beverage = result.scalars()
+        for item in beverage:
+            print(beverage.id)
+            print(beverage.name)
+        return result
 
-    # TODO: fix this mess
-    def populate_database():
-        """class method to populate database"""
-        super().populate_database(self.__beverages)
+    def create_beverage(self, id_, name, pack, price, active) -> Beverage:
+        """create beverage from parameters"""
+        return Beverage(id_, name, pack, price, active)
+
+    def _query_database_for_all_beverages(self) -> object:
+        """method to get iterable of all beverages in database"""
+        result = session.execute(text("SELECT * FROM beverages"))
+        return result

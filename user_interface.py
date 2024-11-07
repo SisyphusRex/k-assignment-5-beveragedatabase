@@ -81,6 +81,10 @@ class UserInterface:
         self.display_import_error()
         print_error("The CSV file has already been imported.")
 
+    def display_already_created_database_error(self):
+        """display already created database error"""
+        print_error("The Database has already been created.")
+
     def display_file_not_found_error(self):
         """Display file not found error"""
         self.display_import_error()

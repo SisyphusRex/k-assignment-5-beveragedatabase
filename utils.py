@@ -4,8 +4,11 @@
 # CIS 226
 # November 6, 2024
 
+# System imports
+import os
+
 # Internal Imports
-from errors import AlreadyImportedError
+from errors import AlreadyImportedError, AlreadyCreatedDatabaseError
 
 
 class CSVProcessor:
@@ -14,13 +17,23 @@ class CSVProcessor:
     def __init__(self):
         """Constructor"""
         self._has_been_imported = False
+        self._has_created_database = False
 
     def import_csv(self, beverage_collection, path_to_csv_file):
         """Import CSV and populate beverage collection"""
 
+        if os.path.exists("./db.sqlite3"):
+            raise AlreadyCreatedDatabaseError
+
         # If already imported, raise AlreadyImportedError
         if self._has_been_imported:
             raise AlreadyImportedError
+
+        if self._has_created_database:
+            raise AlreadyCreatedDatabaseError
+
+        beverage_collection.create_database()
+        self._has_created_database = True
 
         # With open of file
         with open(path_to_csv_file, "r", encoding="utf-8") as file:
@@ -49,4 +62,6 @@ class CSVProcessor:
         active = parts[4] == "True"
 
         # Add a new beverage to the collection with the properties of what was read in.
-        beverage_collection.add(item_id, name, pack, price, active)
+        beverage_collection.populate_database(
+            beverage_collection.create_beverage(item_id, name, pack, price, active)
+        )

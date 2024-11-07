@@ -4,9 +4,12 @@
 # CIS 226
 # November 6, 2024
 
+# System Imports
+
+
 # Internal imports.
 from beverage import BeverageRepository
-from errors import AlreadyImportedError
+from errors import AlreadyImportedError, AlreadyCreatedDatabaseError
 from user_interface import UserInterface
 from utils import CSVProcessor
 
@@ -22,7 +25,7 @@ def main(*args):
 
     # Create an instance of the BeverageCollection class.
     # NOTE: renamed
-    beverage_collection = BeverageRepository()
+    beverage_repository = BeverageRepository()
 
     # Create an instance of the CSVProcessor class.
     csv_processor = CSVProcessor()
@@ -38,23 +41,22 @@ def main(*args):
     # NOTE: Modified while choice !=
     while choice != 7:
         if choice == 1:
-            # Load the CSV File
+            # Load the CSV File and create database
             try:
-                csv_processor.import_csv(beverage_collection, PATH_TO_CSV)
-                beverage_collection.create_database()
-
+                csv_processor.import_csv(beverage_repository, PATH_TO_CSV)
                 ui.display_import_success()
-
             except AlreadyImportedError:
                 ui.display_already_imported_error()
             except FileNotFoundError:
                 ui.display_file_not_found_error()
             except EOFError:
                 ui.display_empty_file_error()
+            except AlreadyCreatedDatabaseError:
+                ui.display_already_created_database_error()
 
         elif choice == 2:
             # Print Entire List Of Items
-            all_item_string = str(beverage_collection)
+            all_item_string = str(beverage_repository)
             if all_item_string:
                 ui.display_all_items(all_item_string)
             else:
@@ -63,7 +65,7 @@ def main(*args):
         elif choice == 3:
             # Search for an Item
             search_query = ui.get_search_query()
-            item_info = beverage_collection.find_by_id(search_query)
+            item_info = beverage_repository.find_by_id(search_query)
             if item_info:
                 ui.display_item_found(item_info)
             else:
@@ -72,8 +74,8 @@ def main(*args):
         elif choice == 4:
             # Collect information for a new item and add it to the collection
             new_item_info = ui.get_new_item_information()
-            if beverage_collection.find_by_id(new_item_info[0]) is None:
-                beverage_collection.add(
+            if beverage_repository.find_by_id(new_item_info[0]) is None:
+                beverage_repository.add(
                     new_item_info[0],
                     new_item_info[1],
                     new_item_info[2],
