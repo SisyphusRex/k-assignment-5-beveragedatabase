@@ -14,7 +14,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.types import String, Float, Boolean
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.sql import text
 
 
 # NOTE: added
@@ -47,7 +46,7 @@ class Beverage(Base):
     name = Column(String(255), nullable=False)
     pack = Column(String(255), nullable=False)
     price = Column(Float(4), nullable=False)
-    active = Column(Boolean(5), nullable=False)
+    active = Column(Boolean(), nullable=False)
 
     def __init__(self, id_, name, pack, price, active):
         """Constructor"""
@@ -79,9 +78,10 @@ class BeverageRepository(Database):
             return_string += f"{beverage}{os.linesep}"
         return return_string
 
-    def add(self, id_, name, pack, price, active):
+    def add(self, beverage):
         """Add a new beverage to the collection"""
-        self.__beverages.append(Beverage(id_, name, pack, price, active))
+        session.add(beverage)
+        session.commit()
 
     def find_by_id(self, id_):
         """Find a beverage by it's id"""
@@ -92,7 +92,42 @@ class BeverageRepository(Database):
         """create beverage from parameters"""
         return Beverage(id_, name, pack, price, active)
 
+    def update_name(self, beverage_to_update: Beverage, new_name: str) -> None:
+        """method to update name"""
+        beverage_to_update.name = new_name
+        session.commit()
+
+    def update_pack(self, beverage_to_update: Beverage, new_pack: str) -> None:
+        """method to update pack"""
+        beverage_to_update.pack = new_pack
+        session.commit()
+
+    def update_price(self, beverage_to_update: Beverage, new_price: str) -> None:
+        """method to update pack"""
+        beverage_to_update.price = new_price
+        session.commit()
+
+    def update_active(self, beverage_to_update: Beverage, new_active: str) -> None:
+        """method to update active"""
+        beverage_to_update.active = new_active
+        session.commit()
+
     def _query_database_for_all_beverages(self) -> object:
         """method to get iterable of all beverages in database"""
         result = session.query(Beverage).all()
         return result
+
+    def delete_beverage(self, beverage: Beverage) -> None:
+        """method to delete beverage from database"""
+        session.delete(beverage)
+        session.commit()
+
+    def delete_inactive_beverages(self) -> None:
+        """method to delete inactive beverages from database"""
+        inactive_beverages = self.query_for_inactive()
+        for beverage in inactive_beverages:
+            self.delete_beverage(beverage)
+
+    def query_for_inactive(self) -> object:
+        """method to query for inactive"""
+        return session.query(Beverage).filter(Beverage.active == 0).all()

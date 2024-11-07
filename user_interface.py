@@ -20,8 +20,55 @@ class UserInterface:
 
     # NOTE: Modified max choices
     MAX_MENU_CHOICES = 7
+    MAX_UPDATE_MENU_CHOICES = 5
+    MAX_DELETE_MENU_CHOICES = 3
 
     # region public methods
+    def display_delete_success(self):
+        """display delete success message"""
+        print_success("Beverage Successfully Deleted.")
+
+    def display_delete_failure(self):
+        """display delete failure message"""
+        print_error("Uhoh. Beverage not deleted :-/")
+
+    def display_delete_menu_and_get_response(
+        self,
+    ) -> int:
+        """display delete menu and get response"""
+        self.__display_delete_menu()
+        self.__display_main_prompt()
+        selection = self.__get_selection()
+
+        while not self.__verify_delete_menu_selection_valid(selection):
+            self.__display_error_message()
+            self.__display_main_prompt()
+            selection = self.__get_selection()
+        return int(selection)
+
+    def display_update_menu_and_get_response(self, item_id: str) -> int:
+        """display update menu and get response"""
+        self.__display_update_menu(item_id)
+        self.__display_main_prompt()
+        selection = self.__get_selection()
+
+        while not self.__verify_update_menu_selection_valid(selection):
+            self.__display_error_message()
+            self.__display_main_prompt()
+            selection = self.__get_selection()
+        return int(selection)
+
+    def get_bool_field_public(self, field_name: str) -> str:
+        """method to get bool field made public"""
+        return self.__get_bool_field(field_name)
+
+    def get_string_field_public(self, field_name: str) -> str:
+        """method to get string field made public"""
+        return self.__get_str_field(field_name)
+
+    def get_decimal_field_public(self, field_name: str) -> str:
+        """method to get decimal field made public"""
+        return self.__get_decimal_field(field_name)
 
     def display_welcome_greeting(self):
         """Display Welcome Greeting."""
@@ -49,10 +96,24 @@ class UserInterface:
         # Return the selection casted to an int
         return int(selection)
 
-    def get_search_query(self):
+    def get_delete_query(self) -> str:
+        """get the delete query from the user"""
+        print()
+        print("What beverage ID would you like to delete?")
+        self.__display_prompt()
+        return input()
+
+    def get_search_query(self) -> str:
         """Get the search query from the user."""
         print()
         print("What would you like to search for?")
+        self.__display_prompt()
+        return input()
+
+    def get_update_query(self) -> str:
+        """get the update query from user"""
+        print()
+        print("Which beverage ID would you like to update?")
         self.__display_prompt()
         return input()
 
@@ -141,6 +202,26 @@ class UserInterface:
         """Display the prompt"""
         print("> ", end="")
 
+    def __display_delete_menu(self):
+        """display delete menu"""
+        print()
+        print("How would you like to delete beverages?")
+        print()
+        print("1. Delete by ID")
+        print("2. Delete Inactive Beverages")
+        print("3. Return to Main Menu")
+
+    def __display_update_menu(self, item_id):
+        """display the update menu"""
+        print()
+        print(f"What field would you like to update for item {item_id}?")
+        print()
+        print("1. Name")
+        print("2. Pack")
+        print("3. Price")
+        print("4. Active")
+        print("5. Return to Main Menu")
+
     # NOTE: Modified __display_menu
     def __display_menu(self):
         """Display the Menu"""
@@ -201,6 +282,50 @@ class UserInterface:
 
             # If the choice is between 0 and the MAX_MENU_CHOICES
             if choice > 0 and choice <= self.MAX_MENU_CHOICES:
+                # Set the return value to True
+                return_value = True
+        # If not a valid int, this exception will get raised.
+        except ValueError:
+            # Ensure return value is False. Should not need this.
+            return_value = False
+
+        # Return the return_value
+        return return_value
+
+    def __verify_delete_menu_selection_valid(self, selection):
+        """Verify that a selection from the delete menu is valid."""
+
+        # Declare a return value variable and init to False
+        return_value = False
+
+        try:
+            # Parse the selection into a choice var
+            choice = int(selection)
+
+            # If the choice is between 0 and the MAX_MENU_CHOICES
+            if choice > 0 and choice <= self.MAX_DELETE_MENU_CHOICES:
+                # Set the return value to True
+                return_value = True
+        # If not a valid int, this exception will get raised.
+        except ValueError:
+            # Ensure return value is False. Should not need this.
+            return_value = False
+
+        # Return the return_value
+        return return_value
+
+    def __verify_update_menu_selection_valid(self, selection):
+        """Verify that a selection from the update menu is valid."""
+
+        # Declare a return value variable and init to False
+        return_value = False
+
+        try:
+            # Parse the selection into a choice var
+            choice = int(selection)
+
+            # If the choice is between 0 and the MAX_MENU_CHOICES
+            if choice > 0 and choice <= self.MAX_UPDATE_MENU_CHOICES:
                 # Set the return value to True
                 return_value = True
         # If not a valid int, this exception will get raised.
