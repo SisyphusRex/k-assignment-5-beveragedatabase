@@ -1,5 +1,8 @@
 """User Interface module"""
 
+# Walter Podewil
+# CIS 226
+# November 6, 2024
 # System imports.
 import os
 
@@ -15,7 +18,8 @@ from colors import (
 class UserInterface:
     """UserInterface class"""
 
-    MAX_MENU_CHOICES = 5
+    # NOTE: Modified max choices
+    MAX_MENU_CHOICES = 7
 
     # region public methods
 
@@ -133,16 +137,21 @@ class UserInterface:
         """Display the prompt"""
         print("> ", end="")
 
+    # NOTE: Modified __display_menu
     def __display_menu(self):
         """Display the Menu"""
         print()
         print("What would you like to do?")
         print()
-        print("1. Load Beverage List From CSV")
+        # NOTE: modified option 1
+        print("1. Set Up and Load Database")
         print("2. Print Entire List Of Items")
         print("3. Search For An Item")
         print("4. Add New Item To The List")
-        print("5. Exit Program")
+        # NOTE: added these options
+        print("5. Update Existing Beverage")
+        print("6. Delete Existing Beverage")
+        print("7. Exit Program")
 
     def __display_main_prompt(self):
         """Display the Prompt"""
@@ -224,7 +233,9 @@ class UserInterface:
                 value = float(input())
                 valid = True
             except ValueError:
-                print_error("That is not a valid Decimal. Please enter a valid Decimal.")
+                print_error(
+                    "That is not a valid Decimal. Please enter a valid Decimal."
+                )
                 print()
                 print(f"What is the new Item's {field_name}?")
                 self.__display_prompt()
@@ -235,6 +246,8 @@ class UserInterface:
         print(f"Should the Item be {fieldname}? (y/n)")
         self.__display_prompt()
         valid = False
+        # NOTE: initialized value to avoid Pylint error on return
+        value = None
         while not valid:
             user_input = input()
             if user_input.lower() == "y" or user_input.lower() == "n":

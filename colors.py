@@ -1,9 +1,14 @@
 """Console Color Helpers"""
 
+# Walter Podewil
+# CIS 226
+# November 6, 2024
 # System imports
 import os
 
-os.system("")  # Required to get the terminal to ALWAYS show colors instead of raw escape codes.
+os.system(
+    ""
+)  # Required to get the terminal to ALWAYS show colors instead of raw escape codes.
 
 
 # Decorator to convert Style class to a Singleton

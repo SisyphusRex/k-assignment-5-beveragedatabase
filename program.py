@@ -1,7 +1,11 @@
 """Program code"""
 
+# Walter Podewil
+# CIS 226
+# November 6, 2024
+
 # Internal imports.
-from beverage import BeverageCollection
+from beverage import BeverageRepository
 from errors import AlreadyImportedError
 from user_interface import UserInterface
 from utils import CSVProcessor
@@ -17,7 +21,8 @@ def main(*args):
     ui = UserInterface()
 
     # Create an instance of the BeverageCollection class.
-    beverage_collection = BeverageCollection()
+    # NOTE: renamed
+    beverage_collection = BeverageRepository()
 
     # Create an instance of the CSVProcessor class.
     csv_processor = CSVProcessor()
@@ -30,11 +35,14 @@ def main(*args):
     choice = ui.display_menu_and_get_response()
 
     # While the choice is not exit program
-    while choice != 5:
+    # NOTE: Modified while choice !=
+    while choice != 7:
         if choice == 1:
             # Load the CSV File
             try:
                 csv_processor.import_csv(beverage_collection, PATH_TO_CSV)
+                beverage_collection.create_database()
+
                 ui.display_import_success()
 
             except AlreadyImportedError:
@@ -75,6 +83,14 @@ def main(*args):
                 ui.display_add_beverage_success()
             else:
                 ui.display_beverage_already_exists_error()
+
+        # TODO: add function to these choices
+        elif choice == 5:
+            # Update Existing beverage
+            ...
+        elif choice == 6:
+            # Delete Existing Beverage
+            ...
 
         # Get the new choice of what to do from the user.
         choice = ui.display_menu_and_get_response()

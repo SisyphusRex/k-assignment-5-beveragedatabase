@@ -1,7 +1,9 @@
 # Assignment 5 - Update the Assignment 1 with Beverages to use a database instead of a CSV
 
 ## Author
-
+Walter Podewil
+CIS 226
+November 6, 2024
 
 
 ## Description
