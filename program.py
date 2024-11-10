@@ -5,13 +5,14 @@
 # November 6, 2024
 
 # System Imports
-
+import os
 
 # Internal imports.
 from beverage import BeverageRepository
 from errors import AlreadyImportedError, AlreadyCreatedDatabaseError
 from user_interface import UserInterface
 from utils import CSVProcessor
+
 
 # Set a constant for the path to the CSV file
 PATH_TO_CSV = "./datafiles/beverage_list.csv"
@@ -56,97 +57,122 @@ def main(*args):
 
         elif choice == 2:
             # Print Entire List Of Items
-            all_item_string = str(beverage_repository)
-            if all_item_string:
-                ui.display_all_items(all_item_string)
+            if os.path.exists("./db.sqlite3"):
+                all_item_string = str(beverage_repository)
+                if all_item_string:
+                    ui.display_all_items(all_item_string)
+                else:
+                    ui.display_all_items_error()
             else:
-                ui.display_all_items_error()
+                ui.display_database_not_created_error()
 
         elif choice == 3:
             # Search for an Item
-            search_query = ui.get_search_query()
-            item_info = beverage_repository.find_by_id(search_query)
-            if item_info:
-                ui.display_item_found(item_info)
+            if os.path.exists("./db.sqlite3"):
+                search_query = ui.get_search_query()
+                item_info = beverage_repository.find_by_id(search_query)
+                if item_info:
+                    ui.display_item_found(item_info)
+                else:
+                    ui.display_item_found_error()
             else:
-                ui.display_item_found_error()
+                ui.display_database_not_created_error()
 
         elif choice == 4:
             # Collect information for a new item and add it to the collection
-            new_item_info = ui.get_new_item_information()
-            if beverage_repository.find_by_id(new_item_info[0]) is None:
-                new_beverage = beverage_repository.create_beverage(
-                    new_item_info[0],
-                    new_item_info[1],
-                    new_item_info[2],
-                    float(new_item_info[3]),
-                    new_item_info[4] == "True",
-                )
-                beverage_repository.add(new_beverage)
-                ui.display_add_beverage_success()
+            if os.path.exists("./db.sqlite3"):
+                new_item_info = ui.get_new_item_information()
+                if beverage_repository.find_by_id(new_item_info[0]) is None:
+                    new_beverage = beverage_repository.create_beverage(
+                        new_item_info[0],
+                        new_item_info[1],
+                        new_item_info[2],
+                        float(new_item_info[3]),
+                        new_item_info[4] == "True",
+                    )
+                    beverage_repository.add(new_beverage)
+                    ui.display_add_beverage_success()
+                else:
+                    ui.display_item_found_error()
             else:
-                ui.display_item_found_error()
+                ui.display_database_not_created_error()
 
         # TODO: add function to these choices
         elif choice == 5:
             # Update Existing beverage
-            search_query = ui.get_update_query()
-            item_to_update = beverage_repository.find_by_id(search_query)
-            if item_to_update:
-                update_menu_choice: int = ui.display_update_menu_and_get_response(
-                    item_to_update.id
-                )
-                while update_menu_choice != 5:
-                    match update_menu_choice:
-                        case 1:
-                            # update name
-                            new_name = ui.get_string_field_public("Name")
-                            beverage_repository.update_name(item_to_update, new_name)
-                        case 2:
-                            # update pack
-                            new_pack = ui.get_string_field_public("Pack")
-                            beverage_repository.update_pack(item_to_update, new_pack)
-                        case 3:
-                            # update price
-                            new_price = ui.get_decimal_field_public("Price")
-                            beverage_repository.update_price(item_to_update, new_price)
-                        case 4:
-                            # update active
-                            new_active = ui.get_bool_field_public("Active")
-                            beverage_repository.update_active(
-                                item_to_update, new_active
-                            )
-                    update_menu_choice = ui.display_update_menu_and_get_response(
+            if os.path.exists("./db.sqlite3"):
+                search_query = ui.get_update_query()
+                item_to_update = beverage_repository.find_by_id(search_query)
+                if item_to_update:
+                    update_menu_choice: int = ui.display_update_menu_and_get_response(
                         item_to_update.id
                     )
+                    while update_menu_choice != 5:
+                        match update_menu_choice:
+                            case 1:
+                                # update name
+                                new_name = ui.get_string_field_public("Name")
+                                beverage_repository.update_name(
+                                    item_to_update, new_name
+                                )
+                            case 2:
+                                # update pack
+                                new_pack = ui.get_string_field_public("Pack")
+                                beverage_repository.update_pack(
+                                    item_to_update, new_pack
+                                )
+                            case 3:
+                                # update price
+                                new_price = ui.get_decimal_field_public("Price")
+                                beverage_repository.update_price(
+                                    item_to_update, new_price
+                                )
+                            case 4:
+                                # update active
+                                new_active = ui.get_bool_field_public("Active")
+                                beverage_repository.update_active(
+                                    item_to_update, new_active
+                                )
+                        update_menu_choice = ui.display_update_menu_and_get_response(
+                            item_to_update.id
+                        )
+                else:
+                    ui.display_item_found_error()
             else:
-                ui.display_item_found_error()
+                ui.display_database_not_created_error()
 
         elif choice == 6:
             # Delete Existing Beverage
-            delete_menu_choice = ui.display_delete_menu_and_get_response()
-            while delete_menu_choice != 3:
-                match delete_menu_choice:
-                    case 1:
-                        # delete by id
-                        delete_query = ui.get_delete_query()
-                        item_to_delete = beverage_repository.find_by_id(delete_query)
-                        if item_to_delete:
-                            beverage_repository.delete_beverage(item_to_delete)
-                            if item_to_delete is None:
+            if os.path.exists("./db.sqlite3"):
+                delete_menu_choice = ui.display_delete_menu_and_get_response()
+                while delete_menu_choice != 3:
+                    match delete_menu_choice:
+                        case 1:
+                            # delete by id
+                            delete_query = ui.get_delete_query()
+                            item_to_delete = beverage_repository.find_by_id(
+                                delete_query
+                            )
+                            if item_to_delete:
+                                beverage_repository.delete_beverage(item_to_delete)
+                                if item_to_delete is None:
+                                    ui.display_delete_success()
+                                else:
+                                    ui.display_delete_failure()
+                            else:
+                                ui.display_item_found_error()
+                        case 2:
+                            # delete if inactive
+                            beverage_repository.delete_inactive_beverages()
+                            inactive_beverage = (
+                                beverage_repository.query_for_one_inactive()
+                            )
+                            if not inactive_beverage:
                                 ui.display_delete_success()
                             else:
                                 ui.display_delete_failure()
-                        else:
-                            ui.display_item_found_error()
-                    case 2:
-                        # delete if inactive
-                        beverage_repository.delete_inactive_beverages()
-                        inactive_beverages = beverage_repository.query_for_inactive()
-                        if not inactive_beverages[0]:
-                            ui.display_delete_success()
-                        else:
-                            ui.display_delete_failure()
-                delete_menu_choice = ui.display_delete_menu_and_get_response()
+                    delete_menu_choice = ui.display_delete_menu_and_get_response()
+            else:
+                ui.display_database_not_created_error()
         # Get the new choice of what to do from the user.
         choice = ui.display_menu_and_get_response()

@@ -24,6 +24,10 @@ class UserInterface:
     MAX_DELETE_MENU_CHOICES = 3
 
     # region public methods
+    def display_database_not_created_error(self):
+        """method to show not created error"""
+        print_error("You must create the database first.")
+
     def display_delete_success(self):
         """display delete success message"""
         print_success("Beverage Successfully Deleted.")

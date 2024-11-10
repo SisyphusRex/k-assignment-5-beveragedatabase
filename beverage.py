@@ -73,6 +73,7 @@ class BeverageRepository(Database):
     def __str__(self):
         """String method"""
         return_string = ""
+
         beverages = self._query_database_for_all_beverages()
         for beverage in beverages:
             return_string += f"{beverage}{os.linesep}"
@@ -80,6 +81,7 @@ class BeverageRepository(Database):
 
     def add(self, beverage):
         """Add a new beverage to the collection"""
+
         session.add(beverage)
         session.commit()
 
@@ -124,10 +126,14 @@ class BeverageRepository(Database):
 
     def delete_inactive_beverages(self) -> None:
         """method to delete inactive beverages from database"""
-        inactive_beverages = self.query_for_inactive()
+        inactive_beverages = self.query_for_all_inactive()
         for beverage in inactive_beverages:
             self.delete_beverage(beverage)
 
-    def query_for_inactive(self) -> object:
+    def query_for_all_inactive(self) -> object:
         """method to query for inactive"""
         return session.query(Beverage).filter(Beverage.active == 0).all()
+
+    def query_for_one_inactive(self) -> object:
+        """look for at least one inactive beverage"""
+        return session.query(Beverage).filter(Beverage.active == 0).first()
