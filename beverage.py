@@ -7,6 +7,8 @@
 # System Imports.
 import os
 
+# First Party Imports
+from errors import DatabaseNotCreatedError
 
 # Third Party Imports
 from sqlalchemy import Column
@@ -66,14 +68,10 @@ class Beverage(Base):
 class BeverageRepository(Database):
     """BeverageRepository class"""
 
-    def __init__(self):
-        """Constructor"""
-        self.__beverages = []
-
     def __str__(self):
         """String method"""
+        self.__check_if_database_exists()
         return_string = ""
-
         beverages = self._query_database_for_all_beverages()
         for beverage in beverages:
             return_string += f"{beverage}{os.linesep}"
@@ -81,12 +79,13 @@ class BeverageRepository(Database):
 
     def add(self, beverage):
         """Add a new beverage to the collection"""
-
+        self.__check_if_database_exists()
         session.add(beverage)
         session.commit()
 
     def find_by_id(self, id_):
         """Find a beverage by it's id"""
+        self.__check_if_database_exists()
         beverage = session.query(Beverage).get(id_)
         return beverage
 
@@ -96,44 +95,58 @@ class BeverageRepository(Database):
 
     def update_name(self, beverage_to_update: Beverage, new_name: str) -> None:
         """method to update name"""
+        self.__check_if_database_exists()
         beverage_to_update.name = new_name
         session.commit()
 
     def update_pack(self, beverage_to_update: Beverage, new_pack: str) -> None:
         """method to update pack"""
+        self.__check_if_database_exists()
         beverage_to_update.pack = new_pack
         session.commit()
 
     def update_price(self, beverage_to_update: Beverage, new_price: str) -> None:
         """method to update pack"""
+        self.__check_if_database_exists()
         beverage_to_update.price = new_price
         session.commit()
 
     def update_active(self, beverage_to_update: Beverage, new_active: str) -> None:
         """method to update active"""
+        self.__check_if_database_exists()
         beverage_to_update.active = new_active
         session.commit()
 
     def _query_database_for_all_beverages(self) -> object:
         """method to get iterable of all beverages in database"""
+        self.__check_if_database_exists()
         result = session.query(Beverage).all()
         return result
 
     def delete_beverage(self, beverage: Beverage) -> None:
         """method to delete beverage from database"""
+        self.__check_if_database_exists()
         session.delete(beverage)
         session.commit()
 
     def delete_inactive_beverages(self) -> None:
         """method to delete inactive beverages from database"""
+        self.__check_if_database_exists()
         inactive_beverages = self.query_for_all_inactive()
         for beverage in inactive_beverages:
             self.delete_beverage(beverage)
 
     def query_for_all_inactive(self) -> object:
         """method to query for inactive"""
+        self.__check_if_database_exists()
         return session.query(Beverage).filter(Beverage.active == 0).all()
 
     def query_for_one_inactive(self) -> object:
         """look for at least one inactive beverage"""
+        self.__check_if_database_exists()
         return session.query(Beverage).filter(Beverage.active == 0).first()
+
+    def __check_if_database_exists(self):
+        """method to check if database exists"""
+        if not os.path.exists("./db.sqlite3"):
+            raise DatabaseNotCreatedError

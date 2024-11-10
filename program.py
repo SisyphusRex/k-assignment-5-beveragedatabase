@@ -5,13 +5,18 @@
 # November 6, 2024
 
 # System Imports
-import os
+
 
 # Internal imports.
 from beverage import BeverageRepository
-from errors import AlreadyImportedError, AlreadyCreatedDatabaseError
+from errors import (
+    AlreadyImportedError,
+    AlreadyCreatedDatabaseError,
+    DatabaseNotCreatedError,
+)
 from user_interface import UserInterface
 from utils import CSVProcessor
+from sqlalchemy.exc import OperationalError
 
 
 # Set a constant for the path to the CSV file
@@ -57,30 +62,31 @@ def main(*args):
 
         elif choice == 2:
             # Print Entire List Of Items
-            if os.path.exists("./db.sqlite3"):
+            try:
                 all_item_string = str(beverage_repository)
-                if all_item_string:
-                    ui.display_all_items(all_item_string)
-                else:
-                    ui.display_all_items_error()
-            else:
+            except DatabaseNotCreatedError:
                 ui.display_database_not_created_error()
+            if all_item_string:
+                ui.display_all_items(all_item_string)
+            else:
+                ui.display_all_items_error()
 
         elif choice == 3:
             # Search for an Item
-            if os.path.exists("./db.sqlite3"):
+
+            try:
                 search_query = ui.get_search_query()
                 item_info = beverage_repository.find_by_id(search_query)
                 if item_info:
                     ui.display_item_found(item_info)
                 else:
                     ui.display_item_found_error()
-            else:
+            except DatabaseNotCreatedError:
                 ui.display_database_not_created_error()
 
         elif choice == 4:
             # Collect information for a new item and add it to the collection
-            if os.path.exists("./db.sqlite3"):
+            try:
                 new_item_info = ui.get_new_item_information()
                 if beverage_repository.find_by_id(new_item_info[0]) is None:
                     new_beverage = beverage_repository.create_beverage(
@@ -94,13 +100,13 @@ def main(*args):
                     ui.display_add_beverage_success()
                 else:
                     ui.display_item_found_error()
-            else:
+            except DatabaseNotCreatedError:
                 ui.display_database_not_created_error()
 
         # TODO: add function to these choices
         elif choice == 5:
             # Update Existing beverage
-            if os.path.exists("./db.sqlite3"):
+            try:
                 search_query = ui.get_update_query()
                 item_to_update = beverage_repository.find_by_id(search_query)
                 if item_to_update:
@@ -138,12 +144,12 @@ def main(*args):
                         )
                 else:
                     ui.display_item_found_error()
-            else:
+            except DatabaseNotCreatedError:
                 ui.display_database_not_created_error()
 
         elif choice == 6:
             # Delete Existing Beverage
-            if os.path.exists("./db.sqlite3"):
+            try:
                 delete_menu_choice = ui.display_delete_menu_and_get_response()
                 while delete_menu_choice != 3:
                     match delete_menu_choice:
@@ -172,7 +178,7 @@ def main(*args):
                             else:
                                 ui.display_delete_failure()
                     delete_menu_choice = ui.display_delete_menu_and_get_response()
-            else:
+            except DatabaseNotCreatedError:
                 ui.display_database_not_created_error()
         # Get the new choice of what to do from the user.
         choice = ui.display_menu_and_get_response()
