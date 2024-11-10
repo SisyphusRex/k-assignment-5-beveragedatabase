@@ -16,7 +16,6 @@ from errors import (
 )
 from user_interface import UserInterface
 from utils import CSVProcessor
-from sqlalchemy.exc import OperationalError
 
 
 # Set a constant for the path to the CSV file
@@ -103,7 +102,6 @@ def main(*args):
             except DatabaseNotCreatedError:
                 ui.display_database_not_created_error()
 
-        # TODO: add function to these choices
         elif choice == 5:
             # Update Existing beverage
             try:
