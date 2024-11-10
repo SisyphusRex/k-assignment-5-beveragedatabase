@@ -80,9 +80,12 @@ If I can not restore your packages easily, I will not grade the assignment.
 | **Total**                               | **100**|
 
 ## Outside Resources Used
+1. https://stackoverflow.com/questions/9276977/python-try-except-an-error-from-modules-that-where-not-imported-explicitly
+ * researched OperationalError catching
 
 
 
 ## Known Problems, Issues, And/Or Errors in the Program
-
+1. 11/9/2024
+ * My utils.py module may have some redundant code for checking if the database has already been created
 
