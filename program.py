@@ -63,12 +63,12 @@ def main(*args):
             # Print Entire List Of Items
             try:
                 all_item_string = str(beverage_repository)
+                if all_item_string:
+                    ui.display_all_items(all_item_string)
+                else:
+                    ui.display_all_items_error()
             except DatabaseNotCreatedError:
                 ui.display_database_not_created_error()
-            if all_item_string:
-                ui.display_all_items(all_item_string)
-            else:
-                ui.display_all_items_error()
 
         elif choice == 3:
             # Search for an Item

@@ -134,7 +134,7 @@ class UserInterface:
     def display_import_success(self):
         """Display import success."""
         print()
-        print_success("Beverage list has been imported successfully.")
+        print_success("Beverage Database has been created successfully.")
 
     def display_import_error(self):
         """Display import error."""
