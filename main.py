@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 """Main entry point definition"""
-# Walter Podewil
-# CIS 226
-# November 6, 2024
+
 # System Imports
 import sys
 
