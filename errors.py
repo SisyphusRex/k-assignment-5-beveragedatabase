@@ -19,3 +19,5 @@ class AlreadyCreatedDatabaseError(Exception):
 
 class DatabaseNotCreatedError(Exception):
     """exception to raise if database not created"""
+
+    pass  # pylint:disable=W0107
