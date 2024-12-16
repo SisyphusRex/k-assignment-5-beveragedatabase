@@ -1,8 +1,6 @@
 """Console Color Helpers"""
 
-# Walter Podewil
-# CIS 226
-# November 6, 2024
+
 # System imports
 import os
 
